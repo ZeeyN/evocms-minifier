@@ -1,0 +1,15 @@
+{
+    "name": "zeeyn/evocms-minifier",
+    "description": "Style minifier for evolution cms",
+    "type": "package",
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Nikita \"ZeeyN\" Rusakov",
+            "email": "zeeynnik@gmail.com"
+        }
+    ],
+    "require": {
+        "matthiasmullie/minify": "^1.3"
+    }
+}
