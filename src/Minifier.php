@@ -7,8 +7,6 @@ use MatthiasMullie\Minify\JS;
 
 class Minifier
 {
-    protected $filesForMin = [];
-
     public function js(array $files, int $minify = 1, string $output_folder = '')
     {
         foreach ($files as $key => $value) {
@@ -18,15 +16,14 @@ class Minifier
         }
         if ($minify == 1) {
             $lib = new JS($filesForMin);
-            if(file_exists($output_folder . 'scripts.min.js'))
-                unlink($output_folder . 'scripts.min.js');
+            $this->deleteFile($output_folder . 'scripts.min.js');
             $lib->minify($output_folder . 'scripts.min.js');
-            return '<script src="' . MODX_SITE_URL . $output_folder . 'scripts.min.js?v=' . substr(md5(max($v)), 0, 25) . '"></script>';
+            return '<script src="' . MODX_SITE_URL . $output_folder . 'scripts.min.js?v=' . $this->getHash($v) . '"></script>';
 
         } else {
             $links = '';
             foreach ($filesForMin as $key => $value) {
-                $links .= '<script src="' . trim($value) . '?v=' . substr(md5(max($v)), 0, 25) . '"></script>';
+                $links .= '<script src="' . trim($value) . '?v=' . $this->getHash($v) . '"></script>';
             }
             return $links;
         }
@@ -44,20 +41,29 @@ class Minifier
                     break;
             }
         }
-
         if ($minify == 1) {
             $lib = new CSS($filesForMin);
-            if(file_exists($output_folder . 'styles.min.css'))
-                unlink($output_folder . 'styles.min.css');
+            $this->deleteFile($output_folder . 'styles.min.css');
             $lib->minify($output_folder . 'styles.min.css');
-            return '<link rel="stylesheet" href="' . MODX_SITE_URL . $output_folder . 'styles.min.css?v=' . substr(md5(max($v)), 0, 25) . '" />';
+            return '<link rel="stylesheet" href="' . MODX_SITE_URL . $output_folder . 'styles.min.css?v=' . $this->getHash($v) . '" />';
         } else {
             $links = '';
             foreach ($filesForMin as $key => $value) {
-                $links .= '<link rel="stylesheet" href="' . trim($value) . '?v=' . substr(md5(max($v)), 0, 25) . '" />';
+                $links .= '<link rel="stylesheet" href="' . trim($value) . '?v=' . $this->getHash($v) . '" />';
             }
             return $links;
         }
+    }
+
+    protected function getHash($val)
+    {
+        return substr(md5(max($val)), 0, 3);
+    }
+
+    protected function deleteFile($file)
+    {
+        if(file_exists($file))
+            unlink($file);
     }
 }
 
