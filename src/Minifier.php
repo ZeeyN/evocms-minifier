@@ -17,8 +17,7 @@ class Minifier
             $this->filesForMin[$key] = $file;
         }
         if ($minify == 1) {
-            $lib = new JS();
-            $lib->add($this->filesForMin);
+            $lib = new JS($this->filesForMin);
             $lib->minify($output_folder . 'scripts.min.js');
             return '<script src="' . MODX_SITE_URL . $output_folder . 'scripts.min.js?v=' . substr(md5(max($v)), 0, 3) . '"></script>';
 
@@ -44,8 +43,7 @@ class Minifier
             }
         }
         if ($minify == 1) {
-            $lib = new CSS();
-            $lib->add($this->filesForMin);
+            $lib = new CSS($this->filesForMin);
             $lib->minify($output_folder . 'styles.min.css');
             return '<link rel="stylesheet" href="' . MODX_SITE_URL . $output_folder . 'styles.min.css?v=' . substr(md5(max($v)), 0, 3) . '" />';
         } else {
