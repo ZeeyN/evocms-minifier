@@ -1,6 +1,6 @@
 {
     "name": "zeeyn/evocms-minifier",
-    "description": "Style minifier for evolution cms",
+    "description": "Minifier for evolution cms",
     "type": "package",
     "license": "MIT",
     "authors": [
