@@ -12,7 +12,7 @@ class Minifier
     public function js(array $files, int $minify = 1, string $output_folder = '')
     {
         foreach ($files as $key => $value) {
-            $file = MODX_BASE_PATH . trim($value);
+            $file = MODX_SITE_URL . trim($value);
             $v[$key] = filemtime($file);
             $filesForMin[$key] = $file;
         }
@@ -26,7 +26,7 @@ class Minifier
         } else {
             $links = '';
             foreach ($filesForMin as $key => $value) {
-                $links .= '<script src="' . MODX_SITE_URL . trim($value) . '?v=' . substr(md5(max($v)), 0, 25) . '"></script>';
+                $links .= '<script src="' . trim($value) . '?v=' . substr(md5(max($v)), 0, 25) . '"></script>';
             }
             return $links;
         }
@@ -35,7 +35,7 @@ class Minifier
     public function css(array $files, int $minify = 1, string $output_folder = '')
     {
         foreach ($files as $key => $value) {
-            $file = MODX_BASE_PATH . trim($value);
+            $file = MODX_SITE_URL . trim($value);
             $fileInfo = pathinfo($file);
             $v[$key] = filemtime($file);
             switch ($fileInfo['extension']) {
@@ -54,7 +54,7 @@ class Minifier
         } else {
             $links = '';
             foreach ($filesForMin as $key => $value) {
-                $links .= '<link rel="stylesheet" href="' . MODX_SITE_URL . trim($value) . '?v=' . substr(md5(max($v)), 0, 25) . '" />';
+                $links .= '<link rel="stylesheet" href="' . trim($value) . '?v=' . substr(md5(max($v)), 0, 25) . '" />';
             }
             return $links;
         }
