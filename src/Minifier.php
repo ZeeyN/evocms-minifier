@@ -17,7 +17,6 @@ class Minifier
             $this->filesForMin[$key] = $file;
         }
         if ($minify == 1) {
-            include_once('../vendor/autoload.php');
             $lib = new JS();
             $lib->add($this->filesForMin);
             $lib->minify($output_folder . 'scripts.min.js');
@@ -45,7 +44,6 @@ class Minifier
             }
         }
         if ($minify == 1) {
-            include_once('../vendor/autoload.php');
             $lib = new CSS();
             $lib->add($this->filesForMin);
             $lib->minify($output_folder . 'styles.min.css');

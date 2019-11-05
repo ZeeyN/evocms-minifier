@@ -8,7 +8,7 @@ use EvolutionCMS\ZeeyN\Minifier;
 
 class MinifierServiceProvider extends ServiceProvider
 {
-    public $evo ='';
+    public $evo;
 
     public function register()
     {
