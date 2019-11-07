@@ -2,69 +2,112 @@
 
 namespace EvolutionCMS\ZeeyN;
 
+use Illuminate\Support\Facades\Cache;
 use MatthiasMullie\Minify\CSS;
 use MatthiasMullie\Minify\JS;
 
 class Minifier
 {
-    public function js(array $files, int $minify = 1, string $output_folder = '')
+
+    const MINIFIER_HASH_KEY = 'beware_the_dragon';
+
+    /**
+     * @param array $files
+     * @param int $minify
+     * @param string $output_folder
+     * @return string
+     */
+    public function activate(array $files, int $minify = 1, string $output_folder = '')
     {
-        foreach ($files as $key => $value) {
-            $file = MODX_SITE_URL . trim($value);
-            $v[$key] = filemtime($file);
-            $filesForMin[$key] = $file;
-        }
+        $links = '';
+        $type = pathinfo(MODX_BASE_PATH . $files[0]);
+
         if ($minify == 1) {
-            $lib = new JS($filesForMin);
-            $this->deleteFile($output_folder . 'scripts.min.js');
-            $lib->minify($output_folder . 'scripts.min.js');
-            return '<script src="' . MODX_SITE_URL . $output_folder . 'scripts.min.js?v=' . $this->getHash($v) . '"></script>';
+            $hash = Cache::rememberForever(self::MINIFIER_HASH_KEY, function () use ($files, $output_folder, $type) {
 
-        } else {
-            $links = '';
-            foreach ($filesForMin as $key => $value) {
-                $links .= '<script src="' . trim($value) . '?v=' . $this->getHash($v) . '"></script>';
-            }
-            return $links;
-        }
-    }
-
-    public function css(array $files, int $minify = 1, string $output_folder = '')
-    {
-        foreach ($files as $key => $value) {
-            $file = MODX_SITE_URL . trim($value);
-            $fileInfo = pathinfo($file);
-            $v[$key] = filemtime($file);
-            switch ($fileInfo['extension']) {
+                $innerHash = self::getHardHash($files);
+                if (file_exists(MODX_BASE_PATH . $output_folder . "include.$innerHash.min.$type")) {
+                    return $innerHash;
+                } else {
+                    $existingFiles = glob(MODX_BASE_PATH . $output_folder . "include.*.min.$type");
+                    if (!empty($existingFiles)) {
+                        foreach ($existingFiles as $existingFile) {
+                            self::deleteFile($existingFile);
+                        }
+                    }
+                    self::generateMinFile($files, $innerHash, $type, $output_folder);
+                    return $innerHash;
+                }
+            });
+            switch ($type) {
                 case 'css':
-                    $filesForMin[$key] = $file;
+                    $links .= '<link rel="stylesheet" href="' . MODX_SITE_URL . $output_folder . 'include.' . $hash . '.min.' . $type . '" />';
+                    break;
+                case 'js':
+                    $links .= '<script src="' . MODX_SITE_URL . $output_folder . 'include.' . $hash . '.min.' . $type . '"></script>';
                     break;
             }
-        }
-        if ($minify == 1) {
-            $lib = new CSS($filesForMin);
-            $this->deleteFile($output_folder . 'styles.min.css');
-            $lib->minify($output_folder . 'styles.min.css');
-            return '<link rel="stylesheet" href="' . MODX_SITE_URL . $output_folder . 'styles.min.css?v=' . $this->getHash($v) . '" />';
         } else {
-            $links = '';
-            foreach ($filesForMin as $key => $value) {
-                $links .= '<link rel="stylesheet" href="' . trim($value) . '?v=' . $this->getHash($v) . '" />';
+            foreach ($files as $key => $file) {
+                switch ($type) {
+                    case 'js':
+                        $links .= '<script src="' . MODX_SITE_URL . trim($file) . '?v=' . self::getSimpleHash(filemtime(MODX_BASE_PATH . $file)) . '"></script>';
+                        break;
+
+                    case 'css':
+                        $links .= '<link rel="stylesheet" href="' . MODX_SITE_URL . trim($file) . '?v=' . self::getSimpleHash(filemtime(MODX_BASE_PATH . $file)) . '" />';
+                        break;
+                }
             }
-            return $links;
         }
+
+        return $links;
     }
 
-    protected function getHash($val)
+    /**
+     * @param $file
+     */
+    protected static function deleteFile($file)
     {
-        return substr(md5(max($val)), 0, 3);
-    }
-
-    protected function deleteFile($file)
-    {
-        if(file_exists($file))
+        if (file_exists($file))
             unlink($file);
     }
+
+    /**
+     * @param $value
+     * @return string
+     */
+    protected static function getSimpleHash($value)
+    {
+        return md5($value);
+
+    }
+
+    /**
+     * @param $files
+     * @return string
+     */
+    protected static function getHardHash($files)
+    {
+        foreach ($files as $file) {
+            $out[] = md5_file(MODX_BASE_PATH . trim($file));
+        }
+        $out = implode($out);
+        return md5($out);
+    }
+
+    /**
+     * @param $files
+     * @param $innerHash
+     * @param $type
+     * @param $output_folder
+     */
+    protected function generateMinFile($files, $innerHash, $type, $output_folder)
+    {
+        $lib = $type == 'js' ? new JS($files) : new CSS($files);
+        $lib->minify($output_folder . "include.$innerHash.min.$type");
+    }
+
 }
 
 
