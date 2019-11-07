@@ -1,24 +1,75 @@
-# evocms-minifier
+evocms-minifier
+=========================
 
 EvolutionCMS 2.* minifier
 
-## Install
+Install
+----------
 `php artisan package:installrequire zeeyn/evocms-minifier '*'` in you **core/** folder
 
-## Use
+How to use
+----------
+`{{ $minifier->activate( $files, $minify = 1, $output_path = '' ) }}`
 
-`{{ $minifier->FUNC
-(['FILE_PATH', ...], MINIFICATION[1|0], OUTPUT_PATH )
- }}`
-
-**explanation**
+Explanation
 ---------- 
-FUNC => function name, 2 variants: css() and js()
+- `$minifier` -- document variable, generates automatically.
 
-FILE_PATH => array of strings, that contains path to files you want to minify, **required**
+- `activate()` -- starting function, all that you will use.
 
-MINIFICATION => integer, if you want to contain all your raw files to one, **default == 1**
+- `$files` -- array of file paths example:
+`$file = ['/example/path/file.{css or js}', ...]`
 
-OUTPUT_PATH => string,  path to result files, **default == ''** (empty string, means, that files will be created in root folder of site)
+- `$minify` -- integer variable, activates min file generation, **default == 1**
+
+- `$output_path` -- path where generated min file will saves, **default -- root folder**
+
+
+Example of use
+----------
+for css:
+```
+    ...
+    <title>Title</title>
  
+     {!! $minifier->activate(['css/style.css','css/style2.css', 'css/style3.css']) !!}
+
+    ...
+```
+
+for js:
+```
+     {!! $minifier->activate(['js/script1.js','js/script2.js', 'js/script3.js']) !!}
+
+```
+
+That's all, now let's see, what in output:
+
+code:
+```
+    {!! $minifier->activate(['css/style.css','css/style2.css', 'css/style3.css']) !!}
+```
+
+devTool:
+
+```
+<link rel="stylesheet" href="include.511b12e6f2e99d887bebfc7e392c7b80.min.css">
+```
+
+As you can see, minifier creates new file, that contains info from all files before
+
+For js files will be same, but used with `<script>` tag
+
+###Some errors
+
+
+if you want to change generated file you must:
+
+- change raw files (NOT GENERATED)
+- clear site cache* 
+- refresh site (F5 ets.)
+
+> \*In EvolutionCMS 2.* release you can clear cache from manager panel
+> in versions between RC and release you must do `php artisan cahce:clear` from your **core** folder 
+
 

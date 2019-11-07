@@ -20,7 +20,7 @@ class Minifier
     public function activate(array $files, int $minify = 1, string $output_folder = '')
     {
         $links = '';
-        $type = pathinfo(MODX_BASE_PATH . $files[0]);
+        $type = pathinfo(MODX_BASE_PATH . $files[0])['extension'];
 
         if ($minify == 1) {
             $hash = Cache::rememberForever(self::MINIFIER_HASH_KEY, function () use ($files, $output_folder, $type) {
