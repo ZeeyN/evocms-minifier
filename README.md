@@ -73,3 +73,6 @@ if you want to change generated file you must:
 > in versions between RC and release you must do `php artisan cahce:clear` from your **core** folder 
 
 
+###More info
+
+if you set `$minify` variable to `0` script will output ol added files with auto version `*.*?v=*`
