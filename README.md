@@ -60,8 +60,8 @@ As you can see, minifier creates new file, that contains info from all files bef
 
 For js files will be same, but used with `<script>` tag
 
-###Some errors
-
+Some errors
+---
 
 if you want to change generated file you must:
 
@@ -73,6 +73,6 @@ if you want to change generated file you must:
 > in versions between RC and release you must do `php artisan cahce:clear` from your **core** folder 
 
 
-###More info
-
+More info
+---
 if you set `$minify` variable to `0` script will output ol added files with auto version `*.*?v=*`
