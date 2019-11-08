@@ -10,6 +10,30 @@ class Minifier
 {
 
     const MINIFIER_HASH_KEY = 'beware_the_dragon';
+    private static $links = '';
+
+
+//---------------------------------General_methods----------------------------------------------------------------------
+
+    /**
+     * @param array $files
+     * @param int $minify
+     * @param string $output_folder
+     */
+    public function css(array $files, int $minify = 1, string $output_folder = '')
+    {
+        $this->activate($files, $minify, $output_folder);
+    }
+
+    /**
+     * @param array $files
+     * @param int $minify
+     * @param string $output_folder
+     */
+    public function js(array $files, int $minify = 1, string $output_folder = '')
+    {
+        $this->activate($files, $minify, $output_folder);
+    }
 
     /**
      * @param array $files
@@ -19,51 +43,17 @@ class Minifier
      */
     public function activate(array $files, int $minify = 1, string $output_folder = '')
     {
-        $links = '';
-        $type = pathinfo(MODX_BASE_PATH . $files[0])['extension'];
-
+        $type = self::getExtension($files[0]);
         if ($minify == 1) {
-            $hash = Cache::rememberForever(self::MINIFIER_HASH_KEY, function () use ($files, $output_folder, $type) {
-
-                $innerHash = self::getHardHash($files);
-                if (file_exists(MODX_BASE_PATH . $output_folder . "include.$innerHash.min.$type")) {
-                    return $innerHash;
-                } else {
-                    $existingFiles = glob(MODX_BASE_PATH . $output_folder . "include.*.min.$type");
-                    if (!empty($existingFiles)) {
-                        foreach ($existingFiles as $existingFile) {
-                            self::deleteFile($existingFile);
-                        }
-                    }
-                    self::generateMinFile($files, $innerHash, $type, $output_folder);
-                    return $innerHash;
-                }
-            });
-            switch ($type) {
-                case 'css':
-                    $links .= '<link rel="stylesheet" href="' . MODX_SITE_URL . $output_folder . 'include.' . $hash . '.min.' . $type . '" />';
-                    break;
-                case 'js':
-                    $links .= '<script src="' . MODX_SITE_URL . $output_folder . 'include.' . $hash . '.min.' . $type . '"></script>';
-                    break;
-            }
+            $hash = self::getLaravelHash($files, $output_folder, $type);
+            self::setMinifiedOutput($output_folder, $hash, $type);
         } else {
-            foreach ($files as $key => $file) {
-                switch ($type) {
-                    case 'js':
-                        $links .= '<script src="' . MODX_SITE_URL . trim($file) . '?v=' . self::getSimpleHash(filemtime(MODX_BASE_PATH . $file)) . '"></script>';
-                        break;
-
-                    case 'css':
-                        $links .= '<link rel="stylesheet" href="' . MODX_SITE_URL . trim($file) . '?v=' . self::getSimpleHash(filemtime(MODX_BASE_PATH . $file)) . '" />';
-                        break;
-                }
-            }
+            self::setNotMinifiedOutput($files, $type);
         }
-
-        return $links;
+        return self::$links;
     }
-
+//======================================================================================================================
+//-----------------------------------------------Support_methods--------------------------------------------------------
     /**
      * @param $file
      */
@@ -102,12 +92,90 @@ class Minifier
      * @param $type
      * @param $output_folder
      */
-    protected function generateMinFile($files, $innerHash, $type, $output_folder)
+    protected static function generateMinFile($files, $innerHash, $type, $output_folder)
     {
         $lib = $type == 'js' ? new JS($files) : new CSS($files);
         $lib->minify($output_folder . "include.$innerHash.min.$type");
     }
 
+
+    /**
+     * @param $path
+     * @return mixed
+     */
+    protected static function getExtension($path)
+    {
+        return pathinfo(MODX_BASE_PATH . $path)['extension'];
+    }
+
+    /**
+     * @param $files
+     * @param $output_folder
+     * @param $type
+     * @return mixed
+     */
+    protected function getLaravelHash($files, $output_folder, $type)
+    {
+        return Cache::rememberForever(self::MINIFIER_HASH_KEY, function () use ($files, $output_folder, $type) {
+
+            $innerHash = self::getHardHash($files);
+            if (file_exists(MODX_BASE_PATH . $output_folder . "include.$innerHash.min.$type")) {
+                return $innerHash;
+            } else {
+                $existingFiles = glob(MODX_BASE_PATH . $output_folder . "include.*.min.$type");
+                if (!empty($existingFiles)) {
+                    foreach ($existingFiles as $existingFile) {
+                        self::deleteFile($existingFile);
+                    }
+                }
+                self::generateMinFile($files, $innerHash, $type, $output_folder);
+                return $innerHash;
+            }
+        });
+    }
+
+    /**
+     * @param $output_folder
+     * @param $hash
+     * @param $type
+     */
+    protected static function setMinifiedOutput($output_folder, $hash, $type)
+    {
+        switch ($type) {
+            case 'css':
+                self::$links .= '<link rel="stylesheet" href="'
+                    . MODX_SITE_URL . $output_folder . 'include.' . $hash . '.min.' . $type . '" />';
+                break;
+            case 'js':
+                self::$links .= '<script src="'
+                    . MODX_SITE_URL . $output_folder . 'include.' . $hash . '.min.' . $type . '"></script>';
+                break;
+        }
+    }
+
+    /**
+     * @param $files
+     * @param $type
+     */
+    protected static function setNotMinifiedOutput($files, $type)
+    {
+        foreach ($files as $file) {
+            switch ($type) {
+                case 'js':
+                    self::$links .= '<script src="'
+                        . MODX_SITE_URL . trim($file)
+                        . '?v=' . self::getSimpleHash(filemtime(MODX_BASE_PATH . $file)) . '"></script>';
+                    break;
+
+                case 'css':
+                    self::$links .= '<link rel="stylesheet" href="'
+                        . MODX_SITE_URL . trim($file)
+                        . '?v=' . self::getSimpleHash(filemtime(MODX_BASE_PATH . $file)) . '" />';
+                    break;
+            }
+        }
+    }
+//======================================================================================================================
 }
 
 
