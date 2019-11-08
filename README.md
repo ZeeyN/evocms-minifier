@@ -24,7 +24,7 @@ Distinctions:
 - `css()` accepts only `*.css` files; 
 
 That means that `activate()` method you can use for css and js files (just place it in right place basing on files extensions)
-and `js()` but `css()` will work only with `*.js` and `*.css` files and you must place them on right place (`css()` in head, `js()` in bottom of `<body>`)
+but `js()` and `css()` will work only with `*.js` and `*.css` files and you must place them on right place (`css()` in head, `js()` in bottom of `<body>`)
 
 Explanation
 ---------- 
