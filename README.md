@@ -5,17 +5,32 @@ EvolutionCMS 2.* minifier
 
 Install
 ----------
-`php artisan package:installrequire zeeyn/evocms-minifier '*'` in you **core/** folder
+`php artisan package:installrequire zeeyn/evocms-minifier '^1.*'` in you **core/** folder
 
 How to use
 ----------
-`{{ $minifier->activate( $files, $minify = 1, $output_path = '' ) }}`
+
+In released version you have 3 general functions:
+
+- `{{ $minifier->activate( $files, $minify = 1, $output_path = '' ) }}`
+
+- `{{ $minifier->js( $files, $minify = 1, $output_path = '' ) }}`
+
+- `{{ $minifier->css( $files, $minify = 1, $output_path = '' ) }}`
+
+Distinctions:
+- `activate()` gets `$files` parameter and automatically gets their extension;
+- `js()` accepts only `*.js` files to use;
+- `css()` accepts only `*.css` files; 
+
+That means that `activate()` method you can use for css and js files (just place it in right place basing on files extensions)
+and `js()` but `css()` will work only with `*.js` and `*.css` files and you must place them on right place (`css()` in head, `js()` in bottom of `<body>`)
 
 Explanation
 ---------- 
 - `$minifier` -- document variable, generates automatically.
 
-- `activate()` -- starting function, all that you will use.
+- `activate()`, `css()`, `js()` -- starting function, all that you will use.
 
 - `$files` -- array of file paths example:
 `$file = ['/example/path/file.{css or js}', ...]`
@@ -60,7 +75,7 @@ As you can see, minifier creates new file, that contains info from all files bef
 
 For js files will be same, but used with `<script>` tag
 
-Some errors
+Rules of use
 ---
 
 if you want to change generated file you must:
@@ -71,6 +86,20 @@ if you want to change generated file you must:
 
 > \*In EvolutionCMS 2.* release you can clear cache from manager panel
 > in versions between RC and release you must do `php artisan cahce:clear` from your **core** folder 
+
+
+in `$files` array paths to files must stands on order of including:
+
+good:
+```
+$files = ['jquery.min.js', 'script.js'] //or another js lib
+```
+
+bad:
+```
+$files = ['script.js', 'jquery.min.js'] //or another js lib
+```
+with the `*.css` files that rule using too
 
 
 More info
