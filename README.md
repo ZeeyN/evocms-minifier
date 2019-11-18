@@ -12,11 +12,11 @@ How to use
 
 In released version you have 3 general functions:
 
-- `{{ $minifier->activate( $files, $minify = 1, $output_path = '' ) }}`
+- `{{ $minifier->activate( $files, $noLaravelCache = 0, $minify = 1, $output_path = '' ) }}`
 
-- `{{ $minifier->js( $files, $minify = 1, $output_path = '' ) }}`
+- `{{ $minifier->js( $files, $noLaravelCache = 0, $minify = 1, $output_path = '' ) }}`
 
-- `{{ $minifier->css( $files, $minify = 1, $output_path = '' ) }}`
+- `{{ $minifier->css( $files, $noLaravelCache = 0, $minify = 1, $output_path = '' ) }}`
 
 Distinctions:
 - `activate()` gets `$files` parameter and automatically gets their extension;
@@ -34,6 +34,8 @@ Explanation
 
 - `$files` -- array of file paths example:
 `$file = ['/example/path/file.{css or js}', ...]`
+
+- `$noLaravelCache`  -- flag that signals to script user or not Laravel cache system, **default == 0**
 
 - `$minify` -- integer variable, activates min file generation, **default == 1**
 
@@ -104,4 +106,5 @@ with the `*.css` files that rule using too
 
 More info
 ---
-if you set `$minify` variable to `0` script will output ol added files with auto version `*.*?v=*`
+- if you set `$minify` variable to `0` script will output ol added files with auto version `*.*?v=*`
+- if you set `$noLaravelCache` variable to `0` script will always generate minified file, not recommended for large `.css` files
