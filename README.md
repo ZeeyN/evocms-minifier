@@ -107,4 +107,4 @@ with the `*.css` files that rule using too
 More info
 ---
 - if you set `$minify` variable to `0` script will output ol added files with auto version `*.*?v=*`
-- if you set `$noLaravelCache` variable to `0` script will always generate minified file, not recommended for large `.css` files
+- if you set `$noLaravelCache` variable to `1` script will always generate minified file, not recommended for large `.css` files
