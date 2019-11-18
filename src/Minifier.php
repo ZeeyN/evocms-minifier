@@ -20,9 +20,9 @@ class Minifier
      * @param int $minify
      * @param string $output_folder
      */
-    public function css(array $files, int $minify = 1, string $output_folder = '')
+    public function css(array $files, int $noLaravelCache = 0, int $minify = 1, string $output_folder = '')
     {
-        $this->activate($files, $minify, $output_folder);
+        $this->activate($files, $noLaravelCache, $minify, $output_folder);
     }
 
     /**
@@ -30,9 +30,9 @@ class Minifier
      * @param int $minify
      * @param string $output_folder
      */
-    public function js(array $files, int $minify = 1, string $output_folder = '')
+    public function js(array $files, int $noLaravelCache = 0, int $minify = 1, string $output_folder = '')
     {
-        $this->activate($files, $minify, $output_folder);
+        $this->activate($files, $noLaravelCache, $minify, $output_folder);
     }
 
     /**
@@ -41,11 +41,19 @@ class Minifier
      * @param string $output_folder
      * @return string
      */
-    public function activate(array $files, int $minify = 1, string $output_folder = '')
+    public function activate(array $files, int $noLaravelCache = 0, int $minify = 1, string $output_folder = '')
     {
         $type = self::getExtension($files[0]);
         if ($minify == 1) {
-            $hash = self::getLaravelHash($files, $output_folder, $type);
+            switch ($noLaravelCache) {
+                case 0:
+                    $hash = self::getLaravelHash($files, $output_folder, $type);
+                    break;
+
+                case 1:
+                    $hash = self::generateHashedFile($files, $output_folder, $type);
+                    break;
+            }
             self::setMinifiedOutput($output_folder, $hash, $type);
         } else {
             self::setNotMinifiedOutput($files, $type);
@@ -94,6 +102,7 @@ class Minifier
      */
     protected static function generateMinFile($files, $innerHash, $type, $output_folder)
     {
+        self::prepareFiles($files);
         $lib = $type == 'js' ? new JS($files) : new CSS($files);
         $lib->minify($output_folder . "include.$innerHash.min.$type");
     }
@@ -117,20 +126,7 @@ class Minifier
     protected function getLaravelHash($files, $output_folder, $type)
     {
         return Cache::rememberForever(self::MINIFIER_HASH_KEY, function () use ($files, $output_folder, $type) {
-
-            $innerHash = self::getHardHash($files);
-            if (file_exists(MODX_BASE_PATH . $output_folder . "include.$innerHash.min.$type")) {
-                return $innerHash;
-            } else {
-                $existingFiles = glob(MODX_BASE_PATH . $output_folder . "include.*.min.$type");
-                if (!empty($existingFiles)) {
-                    foreach ($existingFiles as $existingFile) {
-                        self::deleteFile($existingFile);
-                    }
-                }
-                self::generateMinFile($files, $innerHash, $type, $output_folder);
-                return $innerHash;
-            }
+            return self::generateHashedFile($files, $output_folder, $type);
         });
     }
 
@@ -173,6 +169,33 @@ class Minifier
                         . '?v=' . self::getSimpleHash(filemtime(MODX_BASE_PATH . $file)) . '" />';
                     break;
             }
+        }
+    }
+
+    /**
+     * @param array $files
+     */
+    protected static function prepareFiles (array &$files)
+    {
+        foreach ($files as &$file) {
+            $file = MODX_BASE_PATH . $file;
+        }
+    }
+
+    protected static function generateHashedFile(array $files, string $output_folder, string $type)
+    {
+        $innerHash = self::getHardHash($files);
+        if (file_exists(MODX_BASE_PATH . $output_folder . "include.$innerHash.min.$type")) {
+            return $innerHash;
+        } else {
+            $existingFiles = glob(MODX_BASE_PATH . $output_folder . "include.*.min.$type");
+            if (!empty($existingFiles)) {
+                foreach ($existingFiles as $existingFile) {
+                    self::deleteFile($existingFile);
+                }
+            }
+            self::generateMinFile($files, $innerHash, $type, $output_folder);
+            return $innerHash;
         }
     }
 //======================================================================================================================
