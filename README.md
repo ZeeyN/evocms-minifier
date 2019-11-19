@@ -5,7 +5,7 @@ EvolutionCMS 2.* minifier
 
 Install
 ----------
-`php artisan package:installrequire zeeyn/evocms-minifier '^1.1'` in you **core/** folder
+`php artisan package:installrequire zeeyn/evocms-minifier '^1.1.1'` in you **core/** folder
 
 How to use
 ----------
@@ -106,5 +106,5 @@ with the `*.css` files that rule using too
 
 More info
 ---
-- if you set `$minify` variable to `0` script will output ol added files with auto version `*.*?v=*`
+- if you set `$minify` variable to `0` script will output all added files with auto version `*.*?v=*`
 - if you set `$noLaravelCache` variable to `0` script will always generate minified file, not recommended for large `.css` files

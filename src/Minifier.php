@@ -10,7 +10,7 @@ class Minifier
 {
 
     const MINIFIER_HASH_KEY = 'beware_the_dragon';
-    private static $links = '';
+    private static $links;
 
 
 //---------------------------------General_methods----------------------------------------------------------------------
@@ -22,7 +22,7 @@ class Minifier
      */
     public function css(array $files, int $noLaravelCache = 0, int $minify = 1, string $output_folder = '')
     {
-        $this->activate($files, $noLaravelCache, $minify, $output_folder);
+        return $this->activate($files, $noLaravelCache, $minify, $output_folder);
     }
 
     /**
@@ -32,7 +32,7 @@ class Minifier
      */
     public function js(array $files, int $noLaravelCache = 0, int $minify = 1, string $output_folder = '')
     {
-        $this->activate($files, $noLaravelCache, $minify, $output_folder);
+        return $this->activate($files, $noLaravelCache, $minify, $output_folder);
     }
 
     /**
@@ -43,6 +43,7 @@ class Minifier
      */
     public function activate(array $files, int $noLaravelCache = 0, int $minify = 1, string $output_folder = '')
     {
+        self::$links = '';
         $type = self::getExtension($files[0]);
         if ($minify == 1) {
             switch ($noLaravelCache) {
