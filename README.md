@@ -12,11 +12,11 @@ How to use
 
 In released version you have 3 general functions:
 
-- `{{ $minifier->activate( $files, $noLaravelCache = 0, $minify = 1, $output_path = '' ) }}`
+- `{!! $minifier->activate( $files, $noLaravelCache = 0, $minify = 1, $output_path = '' ) !!}`
 
-- `{{ $minifier->js( $files, $noLaravelCache = 0, $minify = 1, $output_path = '' ) }}`
+- `{!! $minifier->js( $files, $noLaravelCache = 0, $minify = 1, $output_path = '' ) !!}`
 
-- `{{ $minifier->css( $files, $noLaravelCache = 0, $minify = 1, $output_path = '' ) }}`
+- `{!! $minifier->css( $files, $noLaravelCache = 0, $minify = 1, $output_path = '' ) !!}`
 
 Distinctions:
 - `activate()` gets `$files` parameter and automatically gets their extension;
