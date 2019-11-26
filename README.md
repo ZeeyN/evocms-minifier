@@ -5,7 +5,7 @@ EvolutionCMS 2.* minifier
 
 Install
 ----------
-`php artisan package:installrequire zeeyn/evocms-minifier '^1.1.1'` in you **core/** folder
+`php artisan package:installrequire zeeyn/evocms-minifier '^1.1.2'` in you **core/** folder
 
 How to use
 ----------
