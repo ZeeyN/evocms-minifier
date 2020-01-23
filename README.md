@@ -5,18 +5,18 @@ EvolutionCMS 2.* minifier
 
 Install
 ----------
-`php artisan package:installrequire zeeyn/evocms-minifier '^1.1.1'` in you **core/** folder
+`php artisan package:installrequire zeeyn/evocms-minifier '^1.1.2'` in you **core/** folder
 
 How to use
 ----------
 
 In released version you have 3 general functions:
 
-- `{{ $minifier->activate( $files, $noLaravelCache = 0, $minify = 1, $output_path = '' ) }}`
+- `{{ $minifier->activate( $files, $no_laravel_cache = 0, $minify = 1, $output_path = '' ) }}`
 
-- `{{ $minifier->js( $files, $noLaravelCache = 0, $minify = 1, $output_path = '' ) }}`
+- `{{ $minifier->js( $files, $no_laravel_cache = 0, $minify = 1, $output_path = '' ) }}`
 
-- `{{ $minifier->css( $files, $noLaravelCache = 0, $minify = 1, $output_path = '' ) }}`
+- `{{ $minifier->css( $files, $no_laravel_cache = 0, $minify = 1, $output_path = '' ) }}`
 
 Distinctions:
 - `activate()` gets `$files` parameter and automatically gets their extension;
@@ -35,7 +35,7 @@ Explanation
 - `$files` -- array of file paths example:
 `$file = ['/example/path/file.{css or js}', ...]`
 
-- `$noLaravelCache`  -- flag that signals to script user or not Laravel cache system, **default == 0**
+- `$no_laravel_cache`  -- flag that signals to script user or not Laravel cache system, **default == 0**
 
 - `$minify` -- integer variable, activates min file generation, **default == 1**
 
@@ -87,7 +87,7 @@ if you want to change generated file you must:
 - refresh site (F5 ets.)
 
 > \*In EvolutionCMS 2.* release you can clear cache from manager panel
-> in versions between RC and release you must do `php artisan cahce:clear` from your **core** folder 
+> in versions between RC and release you must do `php artisan cache:clear` from your **core** folder 
 
 
 in `$files` array paths to files must stands on order of including:
@@ -106,10 +106,7 @@ with the `*.css` files that rule using too
 
 More info
 ---
-<<<<<<< HEAD
-- if you set `$minify` variable to `0` script will output all added files with auto version `*.*?v=*`
-- if you set `$noLaravelCache` variable to `0` script will always generate minified file, not recommended for large `.css` files
-=======
+
 - if you set `$minify` variable to `0` script will output ol added files with auto version `*.*?v=*`
-- if you set `$noLaravelCache` variable to `1` script will always generate minified file, not recommended for large `.css` files
->>>>>>> a26616d4a7eeb48103ac32ba1859d40257eb327c
+- if you set `$no_laravel_cache` variable to `1` script will always generate minified file, not recommended for large `.css` files
+

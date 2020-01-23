@@ -20,9 +20,9 @@ class Minifier
      * @param int $minify
      * @param string $output_folder
      */
-    public function css(array $files, int $noLaravelCache = 0, int $minify = 1, string $output_folder = '')
+    public function css(array $files, int $no_laravel_cache = 0, int $minify = 1, string $output_folder = '')
     {
-        return $this->activate($files, $noLaravelCache, $minify, $output_folder);
+        return $this->activate($files, $no_laravel_cache, $minify, $output_folder);
     }
 
     /**
@@ -30,9 +30,9 @@ class Minifier
      * @param int $minify
      * @param string $output_folder
      */
-    public function js(array $files, int $noLaravelCache = 0, int $minify = 1, string $output_folder = '')
+    public function js(array $files, int $no_laravel_cache = 0, int $minify = 1, string $output_folder = '')
     {
-        return $this->activate($files, $noLaravelCache, $minify, $output_folder);
+        return $this->activate($files, $no_laravel_cache, $minify, $output_folder);
     }
 
     /**
@@ -41,12 +41,12 @@ class Minifier
      * @param string $output_folder
      * @return string
      */
-    public function activate(array $files, int $noLaravelCache = 0, int $minify = 1, string $output_folder = '')
+    public function activate(array $files, int $no_laravel_cache = 0, int $minify = 1, string $output_folder = '')
     {
         self::$links = '';
         $type = self::getExtension($files[0]);
         if ($minify == 1) {
-            switch ($noLaravelCache) {
+            switch ($no_laravel_cache) {
                 case 0:
                     $hash = self::getLaravelHash($files, $output_folder, $type);
                     break;
@@ -126,7 +126,7 @@ class Minifier
      */
     protected function getLaravelHash($files, $output_folder, $type)
     {
-        return Cache::rememberForever(self::MINIFIER_HASH_KEY, function () use ($files, $output_folder, $type) {
+        return Cache::rememberForever(self::MINIFIER_HASH_KEY . '_' . $type, function () use ($files, $output_folder, $type) {
             return self::generateHashedFile($files, $output_folder, $type);
         });
     }
