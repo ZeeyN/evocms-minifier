@@ -14,23 +14,27 @@ class MinifierServiceProvider extends ServiceProvider
     public function register()
     {
         $this->evo = EvolutionCMS();
-        $minifier = new Minifier();
         //js directive
-        Blade::directive('minjs', function($expression) use ($minifier){
-            $data = explode(',', $expression);
-            return "<?php echo {$minifier->js($data[0], $data[1], $data[2], $data[3])}?>";
+        Blade::directive('minjs', function($args){
+            $minifier = new Minifier();
+            $data = $minifier->parseDirectiveData($args);
+            return $minifier->js($data['files'], $data['args'][0], $data['args'][1], $data['args'][2]);
+
         });
 
         //css directive
-        Blade::directive('mincss', function($expression) use ($minifier){
-            $data = explode(',', $expression);
-            return "<?php echo {$minifier->css($data[0], $data[1], $data[2], $data[3])}?>";
+        Blade::directive('mincss', function($args){
+            $minifier = new Minifier();
+            $data = $minifier->parseDirectiveData($args);
+            return $minifier->css($data['files'], $data['args'][0], $data['args'][1], $data['args'][2]);
+
         });
 
         //adaptive directive
-        Blade::directive('minifier', function($expression) use ($minifier){
-            $data = explode(',', $expression);
-            return "<?php echo {$minifier->activate($data[0], $data[1], $data[2], $data[3])}?>";
+        Blade::directive('minifier', function($args){
+            $minifier = new Minifier();
+            $data = $minifier->parseDirectiveData($args);
+            return $minifier->activate($data['files'], $data['args'][0], $data['args'][1], $data['args'][2]);
         });
 
     }

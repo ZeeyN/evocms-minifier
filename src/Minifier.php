@@ -10,41 +10,46 @@ class Minifier
 {
 
     const MINIFIER_HASH_KEY = 'beware_the_dragon';
-    private static $links;
 
+    private static $links;
 
 //---------------------------------General_methods----------------------------------------------------------------------
 
     /**
-     * @param array $files
-     * @param int $minify
-     * @param string $output_folder
-     */
-    public function css(array $files, int $no_laravel_cache = 0, int $minify = 1, string $output_folder = '')
-    {
-        return $this->activate($files, $no_laravel_cache, $minify, $output_folder);
-    }
-
-    /**
-     * @param array $files
-     * @param int $minify
-     * @param string $output_folder
-     */
-    public function js(array $files, int $no_laravel_cache = 0, int $minify = 1, string $output_folder = '')
-    {
-        return $this->activate($files, $no_laravel_cache, $minify, $output_folder);
-    }
-
-    /**
-     * @param array $files
-     * @param int $minify
+     * @param array  $files
+     * @param string $no_laravel_cache
+     * @param string $minify
      * @param string $output_folder
      * @return string
      */
-    public function activate(array $files, int $no_laravel_cache = 0, int $minify = 1, string $output_folder = '')
+    public function css(array $files, string $no_laravel_cache = '0', string $minify = '1', string $output_folder = '')
+    {
+        return $this->activate($files, $no_laravel_cache, $minify, $output_folder);
+    }
+
+    /**
+     * @param array  $files
+     * @param string $no_laravel_cache
+     * @param string $minify
+     * @param string $output_folder
+     * @return string
+     */
+    public function js(array $files, string $no_laravel_cache = '0', string $minify = '1', string $output_folder = '')
+    {
+        return $this->activate($files, $no_laravel_cache, $minify, $output_folder);
+    }
+
+    /**
+     * @param array  $files
+     * @param string $no_laravel_cache
+     * @param string $minify
+     * @param string $output_folder
+     * @return string
+     */
+    public function activate(array $files, string $no_laravel_cache = '0', string $minify = '1', string $output_folder = '')
     {
         self::$links = '';
-        $type = self::getExtension($files[0]);
+        $type        = self::getExtension($files[0]);
         if ($minify == 1) {
             switch ($no_laravel_cache) {
                 case 0:
@@ -59,6 +64,7 @@ class Minifier
         } else {
             self::setNotMinifiedOutput($files, $type);
         }
+
         return self::$links;
     }
 //======================================================================================================================
@@ -68,8 +74,9 @@ class Minifier
      */
     protected static function deleteFile($file)
     {
-        if (file_exists($file))
+        if (file_exists($file)) {
             unlink($file);
+        }
     }
 
     /**
@@ -79,7 +86,6 @@ class Minifier
     protected static function getSimpleHash($value)
     {
         return md5($value);
-
     }
 
     /**
@@ -92,6 +98,7 @@ class Minifier
             $out[] = md5_file(MODX_BASE_PATH . trim($file));
         }
         $out = implode($out);
+
         return md5($out);
     }
 
@@ -107,7 +114,6 @@ class Minifier
         $lib = $type == 'js' ? new JS($files) : new CSS($files);
         $lib->minify($output_folder . "include.$innerHash.min.$type");
     }
-
 
     /**
      * @param $path
@@ -126,9 +132,12 @@ class Minifier
      */
     protected function getLaravelHash($files, $output_folder, $type)
     {
-        return Cache::rememberForever(self::MINIFIER_HASH_KEY . '_' . $type, function () use ($files, $output_folder, $type) {
-            return self::generateHashedFile($files, $output_folder, $type);
-        });
+        return Cache::rememberForever(
+            self::MINIFIER_HASH_KEY . '_' . $type,
+            function () use ($files, $output_folder, $type) {
+                return self::generateHashedFile($files, $output_folder, $type);
+            }
+        );
     }
 
     /**
@@ -176,7 +185,7 @@ class Minifier
     /**
      * @param array $files
      */
-    protected static function prepareFiles (array &$files)
+    protected static function prepareFiles(array &$files)
     {
         foreach ($files as &$file) {
             $file = MODX_BASE_PATH . $file;
@@ -196,8 +205,38 @@ class Minifier
                 }
             }
             self::generateMinFile($files, $innerHash, $type, $output_folder);
+
             return $innerHash;
         }
+    }
+
+    /**
+     * @param string $data
+     * @return array
+     */
+    public function parseDirectiveData(string $data): array
+    {
+        $cleanDataArr = explode(',', str_replace(['[', ']', PHP_EOL, '\'',' '], '', $data));
+        $out          = [
+            'files' => null,
+            'args' => null
+        ];
+        $defaultArgs = ['0','1',''];
+        foreach ($cleanDataArr as $item) {
+            if (strpos($item, '.js') !== false || strpos($item,'.css') !== false) {
+                $out['files'][] = $item;
+            } else {
+                $out['args'][] = $item;
+            }
+        }
+        if(empty($out['args'][0])) {
+            array_shift($out['args']);
+        }
+        if(count($out['args']) < 3) {
+            $newArgs = array_slice($defaultArgs, count($out['args']));
+            $out['args'] = array_merge($out['args'],$newArgs);
+        }
+        return $out;
     }
 //======================================================================================================================
 }
