@@ -15,7 +15,7 @@ From version 1.2 Minifier calling from Blade directives. Little about them:
 
 - `@mincss(array $files, int $no_laravel_cache = 0, int $minify = 1, string $output_path = '')`
 
-- `@miifier(array $files, int $no_laravel_cache = 0, int $minify = 1, string $output_path = '')`
+- `@minifier(array $files, int $no_laravel_cache = 0, int $minify = 1, string $output_path = '')`
 
 As you can see syntax didn't changed too much, as old commands new directives are calling in same places of blade page.
 Changes touched optimisation spheres, as example:
