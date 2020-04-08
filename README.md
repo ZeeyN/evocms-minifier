@@ -5,9 +5,29 @@ EvolutionCMS 2.* minifier
 
 Install
 ----------
-`php artisan package:installrequire zeeyn/evocms-minifier '^1.1.2'` in you **core/** folder
+`php artisan package:installrequire zeeyn/evocms-minifier "^1.2.0"` in you **core/** folder
 
 How to use
+----------
+From version 1.2 Minifier calling from Blade directives. Little about them:
+
+- `@minjs(array $files, int $no_laravel_cache = 0, int $minify = 1, string $output_path = '')`
+
+- `@mincss(array $files, int $no_laravel_cache = 0, int $minify = 1, string $output_path = '')`
+
+- `@miifier(array $files, int $no_laravel_cache = 0, int $minify = 1, string $output_path = '')`
+
+As you can see syntax didn't changed too much, as old commands new directives are calling in same places of blade page.
+Changes touched optimisation spheres, as example:
+
+In old versions you may use minifier not in all documents, but it will prepares for your document every time.
+Directives are preparing and working only if you call them.
+
+
+
+
+
+How to use (old versions v.1.1.2 and older)
 ----------
 
 In released version you have 3 general functions:
