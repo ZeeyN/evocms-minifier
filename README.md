@@ -5,7 +5,7 @@ EvolutionCMS 2.* minifier
 
 Install
 ----------
-`php artisan package:installrequire zeeyn/evocms-minifier "^1.2.0"` in you **core/** folder
+`php artisan package:installrequire zeeyn/evocms-minifier "^1.2.0"` in you **/core/** folder
 
 How to use
 ----------
@@ -61,6 +61,12 @@ Explanation
 
 - `$output_path` -- path where generated min file will saves, **default -- root folder**
 
+- `@minjs` -- Blade directive that do the same as `$minifier->js()` method.
+
+- `@mincss` -- Blade directive that do the same as `$minifier->css()` method.
+
+- `@minifier` -- Blade adaptive directive that do the same as `$minifier->activate()` method.
+
 
 Example of use
 ----------
@@ -73,18 +79,40 @@ for css:
 
     ...
 ```
+or directive
+```
+    ...
+    <title>Title</title>
+ 
+     @mincss(['css/style.css','css/style2.css', 'css/style3.css'])
+     //or
+     @minifier(['css/style.css','css/style2.css', 'css/style3.css'])
+    ...
+```
 
 for js:
 ```
      {!! $minifier->activate(['js/script1.js','js/script2.js', 'js/script3.js']) !!}
 
 ```
+or directive
+```
+    ...
+    <title>Title</title>
+ 
+     @minjs(['css/style.css','css/style2.css', 'css/style3.css'])
+     //or
+     @minifier(['css/style.css','css/style2.css', 'css/style3.css'])
 
+    ...
+```
 That's all, now let's see, what in output:
 
 code:
 ```
     {!! $minifier->activate(['css/style.css','css/style2.css', 'css/style3.css']) !!}
+    //or
+    @minifier(['css/style.css','css/style2.css', 'css/style3.css'])
 ```
 
 devTool:
@@ -107,7 +135,7 @@ if you want to change generated file you must:
 - refresh site (F5 ets.)
 
 > \*In EvolutionCMS 2.* release you can clear cache from manager panel
-> in versions between RC and release you must do `php artisan cache:clear` from your **core** folder 
+> in versions between RC and release you must do `php artisan cache:clear` from your **/core/** folder 
 
 
 in `$files` array paths to files must stands on order of including:
